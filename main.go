@@ -12,7 +12,6 @@ func secondMax(arr []int) (int, error) {
 
 	max, second := arr[0], arr[1]
 
-	// приводим первые два в порядок
 	if second > max {
 		max, second = second, max
 	}
@@ -34,12 +33,12 @@ func main() {
 	if err != nil {
 		fmt.Println("ошибка:", err)
 	} else {
-		fmt.Println(res) // 45
+		fmt.Println(res)
 	}
 
 	res, err = secondMax([]int{5})
 	if err != nil {
-		fmt.Println("ошибка:", err) // ошибка
+		fmt.Println("ошибка:", err)
 	} else {
 		fmt.Println(res)
 	}
