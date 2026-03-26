@@ -1,20 +1,46 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"sort"
 )
 
-func mergeAndSort(arr1, arr2 []int) []int {
+func secondMax(arr []int) (int, error) {
+	if len(arr) < 2 {
+		return 0, errors.New("меньше двух элементов")
+	}
 
-	result := append(arr1, arr2...)
+	max, second := arr[0], arr[1]
 
-	sort.Ints(result)
+	// приводим первые два в порядок
+	if second > max {
+		max, second = second, max
+	}
 
-	return result
+	for _, num := range arr[2:] {
+		if num > max {
+			second = max
+			max = num
+		} else if num > second && num != max {
+			second = num
+		}
+	}
+
+	return second, nil
 }
 
-func main1() {
-	fmt.Println(mergeAndSort([]int{3, 1, 5}, []int{4, 2, 6})) // [1 2 3 4 5 6]
-	fmt.Println(mergeAndSort([]int{8, 2, 0}, []int{7, 3, 1})) // [0 1 2 3 7 8]
+func main() {
+	res, err := secondMax([]int{10, 20, 4, 45, 99})
+	if err != nil {
+		fmt.Println("ошибка:", err)
+	} else {
+		fmt.Println(res) // 45
+	}
+
+	res, err = secondMax([]int{5})
+	if err != nil {
+		fmt.Println("ошибка:", err) // ошибка
+	} else {
+		fmt.Println(res)
+	}
 }
