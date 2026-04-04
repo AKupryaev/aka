@@ -2,14 +2,25 @@ package main
 
 import "fmt"
 
-func reverse(s string) string {
-	runes := []rune(s)
-	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-		runes[i], runes[j] = runes[j], runes[i]
+func charCase(r rune) string {
+	switch {
+	case r >= 'A' && r <= 'Z':
+		return "Латинская заглавная"
+	case r >= 'a' && r <= 'z':
+		return "Латинская строчная"
+	case r >= 'А' && r <= 'Я':
+		return "Кириллическая заглавная"
+	case r >= 'а' && r <= 'я':
+		return "Кириллическая строчная"
+	default:
+		return "Другое"
 	}
-	return string(runes)
 }
+
 func main() {
-	fmt.Println(reverse("hello"))  // olleh
-	fmt.Println(reverse("Привет")) // тевирП
+	fmt.Println(charCase('A')) // Латинская заглавная
+	fmt.Println(charCase('я')) // Кириллическая строчная
+	fmt.Println(charCase('Б')) // Кириллическая заглавная
+	fmt.Println(charCase('1')) // Другое
+	fmt.Println(charCase('😊')) // Другое
 }
