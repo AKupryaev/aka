@@ -2,19 +2,14 @@ package main
 
 import "fmt"
 
-func maxOfThree(a, b, c int) int {
-	if a >= b && a >= c {
-		return a
-	} else if b >= a && b >= c {
-		return b
-	} else {
-		return c
+func reverse(s string) string {
+	runes := []rune(s)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
 	}
+	return string(runes)
 }
-
 func main() {
-
-	fmt.Println(maxOfThree(3, 7, 5))  // Output: 7
-	fmt.Println(maxOfThree(10, 2, 8)) // Output: 10
-
+	fmt.Println(reverse("hello"))  // olleh
+	fmt.Println(reverse("Привет")) // тевирП
 }
