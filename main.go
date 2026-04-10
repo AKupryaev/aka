@@ -1,37 +1,18 @@
 package main
 
-import (
-	"fmt"
-	"strings"
-	"unicode"
-)
+import "fmt"
 
-func wordCount(text string) map[string]int {
-	result := make(map[string]int)
+func invertMap(m map[string]int) map[int]string {
+	inverted := make(map[int]string)
 
-	// Приводим к нижнему регистру
-	text = strings.ToLower(text)
-
-	// Удаляем знаки препинания
-	clean := strings.Map(func(r rune) rune {
-		if unicode.IsLetter(r) || unicode.IsSpace(r) {
-			return r
-		}
-		return -1
-	}, text)
-
-	// Разбиваем на слова
-	words := strings.Fields(clean)
-
-	// Считаем
-	for _, word := range words {
-		result[word]++
+	for key, value := range m {
+		inverted[value] = key
 	}
 
-	return result
+	return inverted
 }
 
 func main() {
-	fmt.Println(wordCount("Hello, hello world! Hello world."))
-	// map[hello:3 world:2]
+	m := map[string]int{"a": 1, "b": 2, "c": 1}
+	fmt.Println(invertMap(m)) // map[1:"a" или "c", 2:"b"]
 }
