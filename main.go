@@ -2,17 +2,25 @@ package main
 
 import "fmt"
 
-func invertMap(m map[string]int) map[int]string {
-	inverted := make(map[int]string)
+func mergeMaps(m1, m2 map[string]int) map[string]int {
+	result := make(map[string]int)
 
-	for key, value := range m {
-		inverted[value] = key
+	// добавляем элементы из первой map
+	for key, value := range m1 {
+		result[key] = value
 	}
 
-	return inverted
+	// добавляем элементы из второй map (суммируем при совпадении)
+	for key, value := range m2 {
+		result[key] += value
+	}
+
+	return result
 }
 
 func main() {
-	m := map[string]int{"a": 1, "b": 2, "c": 1}
-	fmt.Println(invertMap(m)) // map[1:"a" или "c", 2:"b"]
+	m1 := map[string]int{"apple": 5, "banana": 3}
+	m2 := map[string]int{"banana": 2, "orange": 4}
+
+	fmt.Println(mergeMaps(m1, m2)) // map[apple:5 banana:5 orange:4]
 }
