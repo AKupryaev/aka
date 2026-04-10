@@ -2,12 +2,14 @@ package main
 
 import "fmt"
 
-func appendValue(slice *[]int, value int) {
-	*slice = append(*slice, value)
+func removeAtIndex(arr []int, index int) []int {
+	if index < 0 || index >= len(arr) {
+		return arr
+	}
+	return append(arr[:index], arr[index+1:]...)
 }
 
 func main() {
-	nums := []int{1, 2, 3}
-	appendValue(&nums, 4)
-	fmt.Println(nums) // [1 2 3 4]
+	fmt.Println(removeAtIndex([]int{1, 2, 3, 4, 5}, 2)) // [1 2 4 5]
+	fmt.Println(removeAtIndex([]int{10, 20, 30}, 5))    // [10 20 30]
 }
