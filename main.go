@@ -1,36 +1,21 @@
 package main
 
-import (
-	"fmt"
-	"strconv"
-)
+import "fmt"
 
-func reverseNumber(n int) int {
-	isNegative := n < 0
-	if isNegative {
-		n = -n
+func sequenceGenerator() func() int {
+	counter := 0 // замыкание захватывает переменную counter, которая сохраняет свое состояние между вызовами
+
+	return func() int {
+		counter++ // увеличиваем счетчик при каждом вызове функции
+		return counter
 	}
-
-	str := strconv.Itoa(n)
-
-	bytes := []byte(str)
-
-	for i, j := 0, len(bytes)-1; i < j; i, j = i+1, j-1 {
-		bytes[i], bytes[j] = bytes[j], bytes[i]
-	}
-
-	reversedStr := string(bytes)
-
-	result, _ := strconv.Atoi(reversedStr)
-
-	if isNegative {
-		result = -result
-	}
-
-	return result
 }
 
 func main() {
-	fmt.Println(reverseNumber(123))  // 321
-	fmt.Println(reverseNumber(-123)) // -123
+	next := sequenceGenerator()
+
+	fmt.Println(next()) // 1
+	fmt.Println(next()) // 2
+	fmt.Println(next()) // 3
+	fmt.Println(next()) // 4
 }
