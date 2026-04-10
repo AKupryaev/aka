@@ -2,12 +2,12 @@ package main
 
 import "fmt"
 
-func swap(a, b *int) {
-	*a, *b = *b, *a
+func increment(prt *int) {
+	*prt++
 }
 
 func main() {
-	x, y := 10, 20
-	swap(&x, &y)
-	fmt.Println(x, y) // 20 10
+	n := 5
+	increment(&n)
+	fmt.Println(n) // 6
 }
