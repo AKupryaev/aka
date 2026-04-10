@@ -2,22 +2,19 @@ package main
 
 import "fmt"
 
-func safeDivide(a, b int) (result int) {
-	// defer с recover
+func safeFunction(f func()) {
 	defer func() {
 		if r := recover(); r != nil {
-			result = 0
+			fmt.Println("Ошибка:", r)
 		}
 	}()
 
-	if b == 0 {
-		panic("division by zero")
-	}
-
-	return a / b
+	f()
 }
 
 func main() {
-	fmt.Println(safeDivide(10, 2)) // 5
-	fmt.Println(safeDivide(10, 0)) // 0
+	safeFunction(func() {
+		fmt.Println("Выполняем код...")
+		panic("что-то пошло не так")
+	})
 }
