@@ -2,12 +2,12 @@ package main
 
 import "fmt"
 
-func increment(prt *int) {
-	*prt++
+func appendValue(slice *[]int, value int) {
+	*slice = append(*slice, value)
 }
 
 func main() {
-	n := 5
-	increment(&n)
-	fmt.Println(n) // 6
+	nums := []int{1, 2, 3}
+	appendValue(&nums, 4)
+	fmt.Println(nums) // [1 2 3 4]
 }
