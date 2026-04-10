@@ -1,20 +1,37 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+	"unicode"
+)
 
-func safeFunction(f func()) {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println("Ошибка:", r)
+func wordCount(text string) map[string]int {
+	result := make(map[string]int)
+
+	// Приводим к нижнему регистру
+	text = strings.ToLower(text)
+
+	// Удаляем знаки препинания
+	clean := strings.Map(func(r rune) rune {
+		if unicode.IsLetter(r) || unicode.IsSpace(r) {
+			return r
 		}
-	}()
+		return -1
+	}, text)
 
-	f()
+	// Разбиваем на слова
+	words := strings.Fields(clean)
+
+	// Считаем
+	for _, word := range words {
+		result[word]++
+	}
+
+	return result
 }
 
 func main() {
-	safeFunction(func() {
-		fmt.Println("Выполняем код...")
-		panic("что-то пошло не так")
-	})
+	fmt.Println(wordCount("Hello, hello world! Hello world."))
+	// map[hello:3 world:2]
 }
