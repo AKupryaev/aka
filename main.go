@@ -1,17 +1,36 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
-func sumTon(n int) int {
-	sum := 0
-
-	for i := 1; i <= n; i++ {
-		sum += i
+func reverseNumber(n int) int {
+	isNegative := n < 0
+	if isNegative {
+		n = -n
 	}
-	return sum
-}
-func main() {
 
-	fmt.Println(sumTon(5))  //15
-	fmt.Println(sumTon(10)) //55
+	str := strconv.Itoa(n)
+
+	bytes := []byte(str)
+
+	for i, j := 0, len(bytes)-1; i < j; i, j = i+1, j-1 {
+		bytes[i], bytes[j] = bytes[j], bytes[i]
+	}
+
+	reversedStr := string(bytes)
+
+	result, _ := strconv.Atoi(reversedStr)
+
+	if isNegative {
+		result = -result
+	}
+
+	return result
+}
+
+func main() {
+	fmt.Println(reverseNumber(123))  // 321
+	fmt.Println(reverseNumber(-123)) // -123
 }
