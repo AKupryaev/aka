@@ -2,14 +2,22 @@ package main
 
 import "fmt"
 
-func removeAtIndex(arr []int, index int) []int {
-	if index < 0 || index >= len(arr) {
-		return arr
+func safeDivide(a, b int) (result int) {
+	// defer с recover
+	defer func() {
+		if r := recover(); r != nil {
+			result = 0
+		}
+	}()
+
+	if b == 0 {
+		panic("division by zero")
 	}
-	return append(arr[:index], arr[index+1:]...)
+
+	return a / b
 }
 
 func main() {
-	fmt.Println(removeAtIndex([]int{1, 2, 3, 4, 5}, 2)) // [1 2 4 5]
-	fmt.Println(removeAtIndex([]int{10, 20, 30}, 5))    // [10 20 30]
+	fmt.Println(safeDivide(10, 2)) // 5
+	fmt.Println(safeDivide(10, 0)) // 0
 }
