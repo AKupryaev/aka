@@ -1,21 +1,22 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
-func sequenceGenerator() func() int {
-	counter := 0 // замыкание захватывает переменную counter, которая сохраняет свое состояние между вызовами
-
-	return func() int {
-		counter++ // увеличиваем счетчик при каждом вызове функции
-		return counter
+func powerFunc(exp int) func(int) int {
+	return func(base int) int {
+		return int(math.Pow(float64(base), float64(exp)))
 	}
 }
 
 func main() {
-	next := sequenceGenerator()
+	square := powerFunc(2)
+	fmt.Println(square(4)) // 16
+	fmt.Println(square(5)) // 25
 
-	fmt.Println(next()) // 1
-	fmt.Println(next()) // 2
-	fmt.Println(next()) // 3
-	fmt.Println(next()) // 4
+	cube := powerFunc(3)
+	fmt.Println(cube(2)) // 8
+	fmt.Println(cube(3)) // 27
 }
