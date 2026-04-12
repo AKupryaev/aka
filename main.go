@@ -2,67 +2,58 @@ package main
 
 import (
 	"fmt"
-	"strings"
-	"unicode"
+	"math"
 )
 
-// Структура
-type TextProcessor struct {
-	Text string
+// Интерфейс
+type Shape interface {
+	Area() float64
+	Perimeter() float64
 }
 
-// Подсчёт слов
-func (tp TextProcessor) WordCount() map[string]int {
-	result := make(map[string]int)
-
-	// приводим к нижнему регистру
-	text := strings.ToLower(tp.Text)
-
-	// удаляем знаки препинания
-	clean := strings.Map(func(r rune) rune {
-		if unicode.IsLetter(r) || unicode.IsSpace(r) {
-			return r
-		}
-		return -1
-	}, text)
-
-	// разбиваем на слова
-	words := strings.Fields(clean)
-
-	// считаем
-	for _, w := range words {
-		result[w]++
-	}
-
-	return result
+// Прямоугольник
+type Rectangle struct {
+	Width  float64
+	Height float64
 }
 
-// Замена слов
-func (tp *TextProcessor) ReplaceWord(old, new string) {
-	// делаем замену без учёта регистра (упрощённо)
-	words := strings.Fields(tp.Text)
+func (r Rectangle) Area() float64 {
+	return r.Width * r.Height
+}
 
-	for i, w := range words {
-		// убираем знаки препинания для сравнения
-		clean := strings.Trim(w, ".,!?")
+func (r Rectangle) Perimeter() float64 {
+	return 2 * (r.Width + r.Height)
+}
 
-		if strings.EqualFold(clean, old) {
-			// сохраняем пунктуацию
-			prefix := strings.TrimSuffix(w, clean)
-			suffix := strings.TrimPrefix(w, clean)
+// Круг
+type Circle struct {
+	Radius float64
+}
 
-			words[i] = prefix + new + suffix
-		}
+func (c Circle) Area() float64 {
+	return math.Pi * c.Radius * c.Radius
+}
+
+func (c Circle) Perimeter() float64 {
+	return 2 * math.Pi * c.Radius
+}
+
+// Функция для вывода информации
+func printShapeInfo(s Shape) {
+	switch v := s.(type) {
+	case Rectangle:
+		fmt.Printf("Прямоугольник - Площадь: %.2f, Периметр: %.2f\n", v.Area(), v.Perimeter())
+	case Circle:
+		fmt.Printf("Круг - Площадь: %.2f, Периметр: %.2f\n", v.Area(), v.Perimeter())
+	default:
+		fmt.Printf("Фигура - Площадь: %.2f, Периметр: %.2f\n", s.Area(), s.Perimeter())
 	}
-
-	tp.Text = strings.Join(words, " ")
 }
 
 func main() {
-	tp := TextProcessor{"Hello world, hello again!"}
+	r := Rectangle{Width: 5, Height: 10}
+	c := Circle{Radius: 3}
 
-	fmt.Println(tp.WordCount()) // map[hello:2 world:1 again:1]
-
-	tp.ReplaceWord("hello", "hi")
-	fmt.Println(tp.Text) // Hi world, hi again!
+	printShapeInfo(r) // Прямоугольник - Площадь: 50.00, Периметр: 30.00
+	printShapeInfo(c) // Круг - Площадь: 28.27, Периметр: 18.85
 }
