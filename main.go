@@ -2,25 +2,18 @@ package main
 
 import "fmt"
 
-func mergeMaps(m1, m2 map[string]int) map[string]int {
-	result := make(map[string]int)
+// объявление структуры
+type Rectangle struct {
+	Width  float64
+	Height float64
+}
 
-	// добавляем элементы из первой map
-	for key, value := range m1 {
-		result[key] = value
-	}
-
-	// добавляем элементы из второй map (суммируем при совпадении)
-	for key, value := range m2 {
-		result[key] += value
-	}
-
-	return result
+// метод для структуры
+func (r Rectangle) Area() float64 {
+	return r.Width * r.Height
 }
 
 func main() {
-	m1 := map[string]int{"apple": 5, "banana": 3}
-	m2 := map[string]int{"banana": 2, "orange": 4}
-
-	fmt.Println(mergeMaps(m1, m2)) // map[apple:5 banana:5 orange:4]
+	r := Rectangle{Width: 5, Height: 10}
+	fmt.Println(r.Area()) // 50
 }
