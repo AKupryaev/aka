@@ -5,55 +5,70 @@ import (
 	"fmt"
 )
 
-// Структура товара
-type Product struct {
-	ID       int
-	Name     string
-	Price    float64
-	Quantity int
+// Структура билета
+type Ticket struct {
+	ID            int
+	PassengerName string
+	Destination   string
 }
 
-// Структура склада
-type Inventory struct {
-	products map[int]Product
+// Система бронирования
+type BookingSystem struct {
+	tickets map[int]Ticket
 }
 
 // Конструктор
-func NewInventory() *Inventory {
-	return &Inventory{
-		products: make(map[int]Product),
+func NewBookingSystem() *BookingSystem {
+	return &BookingSystem{
+		tickets: make(map[int]Ticket),
 	}
 }
 
-// Добавление товара
-func (inv *Inventory) AddProduct(p Product) {
-	inv.products[p.ID] = p
-}
-
-// Продажа товара
-func (inv *Inventory) SellProduct(id, qty int) error {
-	product, ok := inv.products[id]
-	if !ok {
-		return errors.New("товар не найден")
+// Бронирование билета
+func (bs *BookingSystem) BookTicket(id int, name, destination string) error {
+	if _, exists := bs.tickets[id]; exists {
+		return errors.New("билет с таким ID уже существует")
 	}
 
-	if product.Quantity < qty {
-		return errors.New("недостаточно товара")
+	bs.tickets[id] = Ticket{
+		ID:            id,
+		PassengerName: name,
+		Destination:   destination,
 	}
-
-	product.Quantity -= qty
-	inv.products[id] = product // важно обновить!
 
 	return nil
 }
 
+// Отмена билета
+func (bs *BookingSystem) CancelTicket(id int) error {
+	if _, exists := bs.tickets[id]; !exists {
+		return errors.New("билет не найден")
+	}
+
+	delete(bs.tickets, id)
+	return nil
+}
+
+// Получение билета
+func (bs *BookingSystem) GetTicket(id int) (Ticket, error) {
+	ticket, exists := bs.tickets[id]
+	if !exists {
+		return Ticket{}, errors.New("билет не найден")
+	}
+
+	return ticket, nil
+}
+
 func main() {
-	inv := NewInventory()
+	bs := NewBookingSystem()
 
-	inv.AddProduct(Product{ID: 1, Name: "Телефон", Price: 30000, Quantity: 10})
+	fmt.Println(bs.BookTicket(1, "Иван", "Москва")) // nil
 
-	fmt.Println(inv.SellProduct(1, 3)) // nil
-	fmt.Println(inv.SellProduct(1, 8)) // ошибка
+	t, err := bs.GetTicket(1)
+	fmt.Println(t, err) // {1 Иван Москва} <nil>
 
-	fmt.Println(inv.products[1]) // проверка остатка
+	fmt.Println(bs.CancelTicket(1)) // nil
+
+	t, err = bs.GetTicket(1)
+	fmt.Println(t, err) // {} билет не найден
 }
