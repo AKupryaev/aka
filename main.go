@@ -1,74 +1,68 @@
 package main
 
 import (
-	"errors"
 	"fmt"
+	"strings"
+	"unicode"
 )
 
-// Структура билета
-type Ticket struct {
-	ID            int
-	PassengerName string
-	Destination   string
+// Структура
+type TextProcessor struct {
+	Text string
 }
 
-// Система бронирования
-type BookingSystem struct {
-	tickets map[int]Ticket
+// Подсчёт слов
+func (tp TextProcessor) WordCount() map[string]int {
+	result := make(map[string]int)
+
+	// приводим к нижнему регистру
+	text := strings.ToLower(tp.Text)
+
+	// удаляем знаки препинания
+	clean := strings.Map(func(r rune) rune {
+		if unicode.IsLetter(r) || unicode.IsSpace(r) {
+			return r
+		}
+		return -1
+	}, text)
+
+	// разбиваем на слова
+	words := strings.Fields(clean)
+
+	// считаем
+	for _, w := range words {
+		result[w]++
+	}
+
+	return result
 }
 
-// Конструктор
-func NewBookingSystem() *BookingSystem {
-	return &BookingSystem{
-		tickets: make(map[int]Ticket),
-	}
-}
+// Замена слов
+func (tp *TextProcessor) ReplaceWord(old, new string) {
+	// делаем замену без учёта регистра (упрощённо)
+	words := strings.Fields(tp.Text)
 
-// Бронирование билета
-func (bs *BookingSystem) BookTicket(id int, name, destination string) error {
-	if _, exists := bs.tickets[id]; exists {
-		return errors.New("билет с таким ID уже существует")
-	}
+	for i, w := range words {
+		// убираем знаки препинания для сравнения
+		clean := strings.Trim(w, ".,!?")
 
-	bs.tickets[id] = Ticket{
-		ID:            id,
-		PassengerName: name,
-		Destination:   destination,
-	}
+		if strings.EqualFold(clean, old) {
+			// сохраняем пунктуацию
+			prefix := strings.TrimSuffix(w, clean)
+			suffix := strings.TrimPrefix(w, clean)
 
-	return nil
-}
-
-// Отмена билета
-func (bs *BookingSystem) CancelTicket(id int) error {
-	if _, exists := bs.tickets[id]; !exists {
-		return errors.New("билет не найден")
+			words[i] = prefix + new + suffix
+		}
 	}
 
-	delete(bs.tickets, id)
-	return nil
-}
-
-// Получение билета
-func (bs *BookingSystem) GetTicket(id int) (Ticket, error) {
-	ticket, exists := bs.tickets[id]
-	if !exists {
-		return Ticket{}, errors.New("билет не найден")
-	}
-
-	return ticket, nil
+	tp.Text = strings.Join(words, " ")
 }
 
 func main() {
-	bs := NewBookingSystem()
+	tp := TextProcessor{"Hello world, hello again!"}
 
-	fmt.Println(bs.BookTicket(1, "Иван", "Москва")) // nil
+	fmt.Println(tp.WordCount()) // map[hello:2 world:1 again:1]
 
-	t, err := bs.GetTicket(1)
-	fmt.Println(t, err) // {1 Иван Москва} <nil>
-
-	fmt.Println(bs.CancelTicket(1)) // nil
-
-	t, err = bs.GetTicket(1)
-	fmt.Println(t, err) // {} билет не найден
+	tp.ReplaceWord("hello", "hi")
+	fmt.Println(tp.Text) // Hi world, hi again!
 }
