@@ -1,59 +1,80 @@
 package main
 
-import (
-	"fmt"
-	"math"
-)
+import "fmt"
 
-// Интерфейс
-type Shape interface {
-	Area() float64
-	Perimeter() float64
+// Интерфейс сортировщика
+type Sorter interface {
+	Sort([]int) []int
 }
 
-// Прямоугольник
-type Rectangle struct {
-	Width  float64
-	Height float64
-}
+// BubbleSort
+type BubbleSort struct{}
 
-func (r Rectangle) Area() float64 {
-	return r.Width * r.Height
-}
+func (b BubbleSort) Sort(nums []int) []int {
+	// копируем срез, чтобы не менять оригинал
+	arr := append([]int(nil), nums...)
 
-func (r Rectangle) Perimeter() float64 {
-	return 2 * (r.Width + r.Height)
-}
-
-// Круг
-type Circle struct {
-	Radius float64
-}
-
-func (c Circle) Area() float64 {
-	return math.Pi * c.Radius * c.Radius
-}
-
-func (c Circle) Perimeter() float64 {
-	return 2 * math.Pi * c.Radius
-}
-
-// Функция для вывода информации
-func printShapeInfo(s Shape) {
-	switch v := s.(type) {
-	case Rectangle:
-		fmt.Printf("Прямоугольник - Площадь: %.2f, Периметр: %.2f\n", v.Area(), v.Perimeter())
-	case Circle:
-		fmt.Printf("Круг - Площадь: %.2f, Периметр: %.2f\n", v.Area(), v.Perimeter())
-	default:
-		fmt.Printf("Фигура - Площадь: %.2f, Периметр: %.2f\n", s.Area(), s.Perimeter())
+	n := len(arr)
+	for i := 0; i < n; i++ {
+		for j := 0; j < n-1-i; j++ {
+			if arr[j] > arr[j+1] {
+				arr[j], arr[j+1] = arr[j+1], arr[j]
+			}
+		}
 	}
+
+	return arr
+}
+
+// QuickSort
+type QuickSort struct{}
+
+func (q QuickSort) Sort(nums []int) []int {
+	arr := append([]int(nil), nums...)
+	return quickSort(arr)
+}
+
+// рекурсивная часть quick sort
+func quickSort(nums []int) []int {
+	if len(nums) < 2 {
+		return nums
+	}
+
+	pivot := nums[len(nums)/2]
+
+	var left, middle, right []int
+
+	for _, v := range nums {
+		switch {
+		case v < pivot:
+			left = append(left, v)
+		case v == pivot:
+			middle = append(middle, v)
+		default:
+			right = append(right, v)
+		}
+	}
+
+	left = quickSort(left)
+	right = quickSort(right)
+
+	result := append(left, middle...)
+	result = append(result, right...)
+
+	return result
+}
+
+// функция, использующая интерфейс
+func sortNumbers(s Sorter, nums []int) []int {
+	return s.Sort(nums)
 }
 
 func main() {
-	r := Rectangle{Width: 5, Height: 10}
-	c := Circle{Radius: 3}
+	bSorter := BubbleSort{}
+	qSorter := QuickSort{}
 
-	printShapeInfo(r) // Прямоугольник - Площадь: 50.00, Периметр: 30.00
-	printShapeInfo(c) // Круг - Площадь: 28.27, Периметр: 18.85
+	nums := []int{5, 2, 9, 1, 5, 6}
+
+	fmt.Println(sortNumbers(bSorter, nums)) // [1 2 5 5 6 9]
+	fmt.Println(sortNumbers(qSorter, nums)) // [1 2 5 5 6 9]
 }
