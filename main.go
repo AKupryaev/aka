@@ -1,80 +1,28 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
-// Интерфейс сортировщика
-type Sorter interface {
-	Sort([]int) []int
-}
-
-// BubbleSort
-type BubbleSort struct{}
-
-func (b BubbleSort) Sort(nums []int) []int {
-	// копируем срез, чтобы не менять оригинал
-	arr := append([]int(nil), nums...)
-
-	n := len(arr)
-	for i := 0; i < n; i++ {
-		for j := 0; j < n-1-i; j++ {
-			if arr[j] > arr[j+1] {
-				arr[j], arr[j+1] = arr[j+1], arr[j]
-			}
-		}
+func sender(name string, ch chan int) {
+	for i := 1; i <= 5; i++ {
+		fmt.Printf("%s отправляет: %d\n", name, i)
+		ch <- i
+		time.Sleep(500 * time.Millisecond)
 	}
-
-	return arr
-}
-
-// QuickSort
-type QuickSort struct{}
-
-func (q QuickSort) Sort(nums []int) []int {
-	arr := append([]int(nil), nums...)
-	return quickSort(arr)
-}
-
-// рекурсивная часть quick sort
-func quickSort(nums []int) []int {
-	if len(nums) < 2 {
-		return nums
-	}
-
-	pivot := nums[len(nums)/2]
-
-	var left, middle, right []int
-
-	for _, v := range nums {
-		switch {
-		case v < pivot:
-			left = append(left, v)
-		case v == pivot:
-			middle = append(middle, v)
-		default:
-			right = append(right, v)
-		}
-	}
-
-	left = quickSort(left)
-	right = quickSort(right)
-
-	result := append(left, middle...)
-	result = append(result, right...)
-
-	return result
-}
-
-// функция, использующая интерфейс
-func sortNumbers(s Sorter, nums []int) []int {
-	return s.Sort(nums)
 }
 
 func main() {
-	bSorter := BubbleSort{}
-	qSorter := QuickSort{}
+	ch := make(chan int)
 
-	nums := []int{5, 2, 9, 1, 5, 6}
+	// запускаем две горутины
+	go sender("Горутина 1", ch)
+	go sender("Горутина 2", ch)
 
-	fmt.Println(sortNumbers(bSorter, nums)) // [1 2 5 5 6 9]
-	fmt.Println(sortNumbers(qSorter, nums)) // [1 2 5 5 6 9]
+	// читаем 10 значений (по 5 от каждой)
+	for i := 0; i < 10; i++ {
+		val := <-ch
+		fmt.Println("main получил:", val)
+	}
 }
