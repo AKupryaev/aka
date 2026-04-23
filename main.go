@@ -2,29 +2,27 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
 
-func sender(name string, ch chan int) {
+func sender(ch chan int) {
 	for i := 1; i <= 5; i++ {
-		fmt.Printf("%s отправляет: %d\n", name, i)
-		ch <- i // не блокируется, пока буфер не заполнен
+		fmt.Println("Отправка:", i)
+		ch <- i
 	}
-	fmt.Println(name, "завершил отправку")
+	close(ch) // закрываем канал после отправки
 }
 
 func main() {
-	// буфер на 3 элемента
-	ch := make(chan int, 3)
+	ch := make(chan int)
 
-	go sender("Горутина 1", ch)
-	go sender("Горутина 2", ch)
+	go sender(ch)
 
-	time.Sleep(1 * time.Second) // даём горутинам заполнить буфер
-
-	for i := 0; i < 10; i++ {
-		val := <-ch
-		fmt.Println("main получил:", val)
-		time.Sleep(300 * time.Millisecond)
+	for {
+		val, ok := <-ch
+		if !ok {
+			fmt.Println("Канал закрыт, выходим")
+			break
+		}
+		fmt.Println("Получено:", val)
 	}
 }
