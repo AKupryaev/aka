@@ -8,21 +8,23 @@ import (
 func sender(name string, ch chan int) {
 	for i := 1; i <= 5; i++ {
 		fmt.Printf("%s отправляет: %d\n", name, i)
-		ch <- i
-		time.Sleep(500 * time.Millisecond)
+		ch <- i // не блокируется, пока буфер не заполнен
 	}
+	fmt.Println(name, "завершил отправку")
 }
 
 func main() {
-	ch := make(chan int)
+	// буфер на 3 элемента
+	ch := make(chan int, 3)
 
-	// запускаем две горутины
 	go sender("Горутина 1", ch)
 	go sender("Горутина 2", ch)
 
-	// читаем 10 значений (по 5 от каждой)
+	time.Sleep(1 * time.Second) // даём горутинам заполнить буфер
+
 	for i := 0; i < 10; i++ {
 		val := <-ch
 		fmt.Println("main получил:", val)
+		time.Sleep(300 * time.Millisecond)
 	}
 }
