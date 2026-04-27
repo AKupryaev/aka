@@ -5,30 +5,21 @@ import (
 )
 
 func main() {
-	ch := make(chan int)
-
+	ch1 := make(chan int)
+	ch2 := make(chan int)
 	go func() {
-		for i := range 10000 {
-			ch <- i
-		}
-		close(ch)
+		ch1 <- 1
+		ch2 <- 2
 	}()
 
-	go func() {
-		for i := range 10000 {
-			ch <- i * 2
-		}
-		close(ch)
-	}()
+	for i := 0; i < 2; i++ {
 
-	go func() {
-		for v := range ch {
-			fmt.Println("v =", v, "worker1")
-		}
-	}()
+		select {
+		case v := <-ch1:
+			fmt.Println("v =", v, "from ch1")
+		case v := <-ch2:
+			fmt.Println("v =", v, "from ch2")
 
-	for v := range ch {
-		fmt.Println("v =", v, "worker2")
+		}
 	}
-
 }
