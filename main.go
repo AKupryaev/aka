@@ -2,25 +2,35 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
+	"sync"
 	"time"
 )
 
+func worker(id int, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	// случайное время от 0 до 2 секунд
+	duration := time.Duration(rand.Intn(2000)) * time.Millisecond
+
+	fmt.Printf("Worker %d старт, будет работать %v\n", id, duration)
+	time.Sleep(duration)
+	fmt.Printf("Worker %d завершился\n", id)
+}
+
 func main() {
+	rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	sem := make(chan struct{}, 3) // три горутины могут работать одновременно
+	var wg sync.WaitGroup
+	N := 5
 
-	for i := 0; i < 10; i++ {
-		go func(i int) {
+	wg.Add(N)
 
-			sem <- struct{}{} // заняли слот
-
-			fmt.Println("start", i)
-			time.Sleep(1 * time.Second)
-			fmt.Println("end", i)
-
-			<-sem // освободили слот
-		}(i)
+	for i := 1; i <= N; i++ {
+		go worker(i, &wg)
 	}
 
-	time.Sleep(5 * time.Second) // ждем, чтобы все горутины завершились
+	wg.Wait()
+
+	fmt.Println("Все горутины завершены")
 }
