@@ -5,36 +5,14 @@ import (
 	"sync"
 )
 
-type Config struct {
-	Value string
-}
-
-var (
-	once     sync.Once
-	instance *Config
-)
-
-func getConfig() *Config {
-	once.Do(func() {
-		fmt.Println("Инициализация...")
-		instance = &Config{
-			Value: "Настройки загружены",
-		}
-	})
-	return instance
-}
-
 func main() {
 	var wg sync.WaitGroup
-	wg.Add(3)
+	wg.Add(1)
 
-	for i := 1; i <= 3; i++ {
-		go func(id int) {
-			defer wg.Done()
-			cfg := getConfig()
-			fmt.Printf("Goroutine %d: %s\n", id, cfg.Value)
-		}(i)
-	}
+	go func() {
+		defer wg.Done() // забыли Done() без дефера зависнет навсегда
+		fmt.Println("работаю")
+	}()
 
-	wg.Wait()
+	wg.Wait() // ✅ не зависнет навсегда
 }
