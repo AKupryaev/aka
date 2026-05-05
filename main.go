@@ -2,35 +2,39 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"sync"
-	"time"
 )
 
-func worker(id int, wg *sync.WaitGroup) {
-	defer wg.Done()
+type Config struct {
+	Value string
+}
 
-	// случайное время от 0 до 2 секунд
-	duration := time.Duration(rand.Intn(2000)) * time.Millisecond
+var (
+	once     sync.Once
+	instance *Config
+)
 
-	fmt.Printf("Worker %d старт, будет работать %v\n", id, duration)
-	time.Sleep(duration)
-	fmt.Printf("Worker %d завершился\n", id)
+func getConfig() *Config {
+	once.Do(func() {
+		fmt.Println("Инициализация...")
+		instance = &Config{
+			Value: "Настройки загружены",
+		}
+	})
+	return instance
 }
 
 func main() {
-	rand.New(rand.NewSource(time.Now().UnixNano()))
-
 	var wg sync.WaitGroup
-	N := 5
+	wg.Add(3)
 
-	wg.Add(N)
-
-	for i := 1; i <= N; i++ {
-		go worker(i, &wg)
+	for i := 1; i <= 3; i++ {
+		go func(id int) {
+			defer wg.Done()
+			cfg := getConfig()
+			fmt.Printf("Goroutine %d: %s\n", id, cfg.Value)
+		}(i)
 	}
 
 	wg.Wait()
-
-	fmt.Println("Все горутины завершены")
 }
